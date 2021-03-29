@@ -1,0 +1,4 @@
+controllers/.env
+.vscode
+.test.ts
+.DS_Store

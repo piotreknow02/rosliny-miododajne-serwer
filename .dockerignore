@@ -1,0 +1,6 @@
+.vscode
+database
+README.md
+scripts.json
+.test.ts
+controllers/.env
