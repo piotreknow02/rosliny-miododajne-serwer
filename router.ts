@@ -2,7 +2,7 @@ import { Router, RouterContext } from "./deps.ts";
 import PlantController from "./controllers/plantController.ts";
 
 const router: Router = new Router();
-const controller = new PlantController("127.0.0.1:3306");
+const controller = new PlantController(Deno.env.get("MYSQL_SERVER_ADDR")!);
 
 router.post("/plants", async (ctx: RouterContext) => {
     ctx.response.type = "application/json";

@@ -5,12 +5,11 @@ export default class PlantController {
   private client!: Client;
   constructor(host: string)
   {
-    const envfile = config()
     new Client().connect({
       hostname: host,
       username: "root",
       db: "RoslinyMiododajne",
-      password: Deno.env.get("MYSQL_ROOT_PASSWORD") || envfile.MYSQL_ROOT_PASSWORD,
+      password: Deno.env.get("MYSQL_ROOT_PASSWORD"),
     }).then(cli => this.client = cli);
   }
   async getAllPlants(order?: string): Promise<Plant[]>
