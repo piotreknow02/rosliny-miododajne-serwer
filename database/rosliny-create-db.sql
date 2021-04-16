@@ -17,7 +17,7 @@ CREATE TABLE rosliny(
   Nazwa_lacinska varchar(40) NOT NULL UNIQUE,
   Wydajnosc_miodowa int(10) UNSIGNED DEFAULT NULL,
   Wydajnosc_pylkowa int(10) UNSIGNED DEFAULT NULL,
-  Zdjecie varchar(50) DEFAULT NULL,
+  Zdjecie varchar(50000) DEFAULT NULL,
   PRIMARY KEY (Id),
   FOREIGN KEY (Id_rodzaju_rosliny) REFERENCES rodzaje_roslin (Id)
 );
