@@ -1,4 +1,4 @@
-import { Client, config } from "../deps.ts";
+import { Client, multiParser, ExecuteResult } from "../deps.ts";
 import Plant from "../models/Plant.ts";
 
 export default class PlantController {
@@ -10,21 +10,40 @@ export default class PlantController {
       username: "root",
       db: "RoslinyMiododajne",
       password: Deno.env.get("MYSQL_ROOT_PASSWORD"),
-    }).then(cli => this.client = cli);
+    }).then((cli: Client) => this.client = cli);
   }
-  async getAllPlants(order?: string): Promise<Plant[]>
+  public async getAllPlants(): Promise<Plant[]>
   {
-    return await this.client.execute(`SELECT * FROM rosliny ORDER BY ${order == null ? "Id" : order}`) as Plant[];
+    const data = await this.client.execute(await Deno.readTextFile("./database/select-all.sql"));
+    return this.MapData(data);
   }
-  async GetFromQuery(query: string): Promise<Plant[] | Error>
+  public async GetFromQuery(formQuery: any): Promise<Plant[]>
   {
+    const query = this.queryToCommand(formQuery);
     try
     {
-      return await this.client.execute(query) as Plant[];
+      const data = await this.client.execute(await query);
+      return this.MapData(data);
     }
     catch
     {
       throw new Error("Invalid query");
     }
+  }
+  private MapData(data: ExecuteResult): Plant[]
+  {
+    return data.rows!.map((element: any) => 
+      new Plant(element.id, element.nazwa, element.kind, element.nazwaLacinska, element.wydajnoscMiodowa, element.wydajnoscPylkowa, element.kraj)
+    );
+  }
+  private async queryToCommand(query: any): Promise<string>
+  {
+    return (await multiParser(query))?.fields.query!;
+  }
+  public async init(): Promise<void>
+  {
+    this.client.execute(await Deno.readTextFile("./database/rosliny-create-db.sql"));
+    this.client.execute(await Deno.readTextFile("./database/rosliny-insert.sql"));
+    console.log("Database initialized");
   }
 }
