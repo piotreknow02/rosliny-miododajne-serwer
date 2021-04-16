@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+
+  deno:
+    build:
+      context: .
+      network: host
+    env_file:
+      - .env
+    # command: deno run --allow-net=0.0.0.0:3000 --allow-read=/ --allow-env server.ts
+    ports:
+      - 3000:3000
+    networks:
+      - rosliny
+
+  mysql:
+    image: mysql
+    restart: unless-stopped
+    volumes:
+      - ./data:/var/lib/mysql
+    env_file:
+      - .env
+    ports: 
+      - 3306:3306
+    depends_on:
+      - deno
+    networks:
+      - rosliny
+      
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    networks:
+      - rosliny
+
+networks:
+  rosliny:
+    external: true
+
+# docker-compose up --build
