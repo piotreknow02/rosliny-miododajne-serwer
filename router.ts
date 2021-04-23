@@ -21,20 +21,4 @@ router.get("/", (ctx: RouterContext) => {
     ctx.response.redirect("https://github.com/piotreknow02/rosliny-miododajne-client");
 });
 
-router.get("/init", (ctx: RouterContext) => {
-    let resp = "";
-    try{
-        controller.init();
-        resp = "Database initialized";
-    }
-    catch(e)
-    {
-        resp = e.message;
-    }
-    finally
-    {
-        ctx.response.body = resp;
-    }
-});
-
 export { router };

@@ -3,6 +3,7 @@ import Plant from "../models/Plant.ts";
 
 export default class PlantController {
   private client!: Client;
+  private initialized = false;
   constructor(host: string)
   {
     new Client().connect({
@@ -14,7 +15,7 @@ export default class PlantController {
   }
   public async getAllPlants(): Promise<Plant[]>
   {
-    const data = await this.client.execute(await Deno.readTextFile("./database/select-all.sql"));
+    const data = await this.client.query(await Deno.readTextFile("./database/select-all.sql"));
     return this.MapData(data);
   }
   public async GetFromQuery(formQuery: any): Promise<Plant[]>
@@ -22,7 +23,7 @@ export default class PlantController {
     const query = this.queryToCommand(formQuery);
     try
     {
-      const data = await this.client.execute(await query);
+      const data = await this.client.query(await query);
       return this.MapData(data);
     }
     catch
@@ -39,11 +40,5 @@ export default class PlantController {
   private async queryToCommand(query: any): Promise<string>
   {
     return (await multiParser(query))?.fields.query!;
-  }
-  public async init(): Promise<void>
-  {
-    this.client.execute(await Deno.readTextFile("./database/rosliny-create-db.sql"));
-    this.client.execute(await Deno.readTextFile("./database/rosliny-insert.sql"));
-    console.log("Database initialized");
   }
 }
