@@ -17,7 +17,7 @@ CREATE TABLE rosliny(
   Nazwa_lacinska varchar(40) NOT NULL UNIQUE,
   Wydajnosc_miodowa int(10) UNSIGNED DEFAULT NULL,
   Wydajnosc_pylkowa int(10) UNSIGNED DEFAULT NULL,
-  Zdjecie varchar(50000) DEFAULT NULL,
+  Zdjecie TEXT(50000) DEFAULT NULL,
   PRIMARY KEY (Id),
   FOREIGN KEY (Id_rodzaju_rosliny) REFERENCES rodzaje_roslin (Id)
 );
@@ -31,8 +31,8 @@ CREATE TABLE kraje(
 CREATE TABLE kraje_roslin(
   Id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Id_kraju int(10) UNSIGNED NOT NULL,
-  Id_drzewa int(10) UNSIGNED NOT NULL,
+  Id_rosliny int(10) UNSIGNED NOT NULL,
   PRIMARY KEY (Id),
-  FOREIGN KEY (Id_drzewa) REFERENCES rosliny (Id),
+  FOREIGN KEY (Id_rosliny) REFERENCES rosliny (Id),
   FOREIGN KEY (Id_kraju) REFERENCES kraje (Id)
 );

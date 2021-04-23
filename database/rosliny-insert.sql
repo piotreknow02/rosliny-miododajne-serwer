@@ -2,6 +2,8 @@ USE RoslinyMiododajne;
 
 INSERT INTO rodzaje_roslin(Nazwa) VALUES ("Drzewo");
 
+INSERT INTO kraje(Kraj) VALUES ("Polska");
+
 INSERT INTO rosliny(Nazwa, Nazwa_lacinska, Id_rodzaju_rosliny, Wydajnosc_miodowa, Wydajnosc_pylkowa, Zdjecie) VALUES 
 ('jarząb pospolity', 'Sorbus aucuparia', 1, 20, 0, NULL),
 ('ewodia hupejska', 'Tetradium daniellii', 1, 260, 0, NULL),
@@ -17,3 +19,19 @@ INSERT INTO rosliny(Nazwa, Nazwa_lacinska, Id_rodzaju_rosliny, Wydajnosc_miodowa
 ('robinia akacjowa', 'Robinia pseudoacacia', 1, 65, 15, NULL),
 ('wierzba', 'Salix', 1, 30, 45, NULL),
 ('śliwa domowa', 'Prunus domestica', 1, 30, 15, NULL);
+
+INSERT INTO kraje_roslin(Id_kraju, Id_rosliny) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5),
+(1, 6),
+(1, 7),
+(1, 8),
+(1, 9),
+(1, 10),
+(1, 11),
+(1, 12),
+(1, 13),
+(1, 14);
