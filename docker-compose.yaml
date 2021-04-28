@@ -5,6 +5,7 @@ services:
     build:
       context: .
       network: host
+    restart: unless-stopped
     env_file:
       - .env
     command: deno run --allow-net=0.0.0.0:3000,${MYSQL_SERVER_ADDR}:3306 --allow-read=/ --allow-env=MYSQL_SERVER_ADDR,MYSQL_ROOT_PASSWORD server.ts
@@ -14,7 +15,7 @@ services:
       - rosliny
 
   mysql:
-    image: mysql
+    image: mariadb
     restart: unless-stopped
     volumes:
       - ./data:/var/lib/mysql
@@ -42,6 +43,8 @@ services:
   nginx:
     image: nginx
     restart: unless-stopped
+    volumes:
+      - ./nginx:/etc/nginx
     ports:
       - 80:80
       - 443:443
