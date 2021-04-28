@@ -1,44 +1,48 @@
-import { Client, multiParser, ExecuteResult } from "../deps.ts";
-import Plant from "../models/Plant.ts";
+import { Database, MySQLConnector, readCSV } from "../deps.ts";
+import { Plant, Country, Category, PlantCountry, PlantCategory } from "../models/Plant.ts";
 
 export default class PlantController {
-  private client!: Client;
+  private connector: MySQLConnector;
+  private db: Database; 
   private initialized = false;
   constructor(host: string)
   {
-    new Client().connect({
-      hostname: host,
+    this.connector = new MySQLConnector({
+      host: host,
+      database: "RoslinyMiododajne",
       username: "root",
-      db: "RoslinyMiododajne",
-      password: Deno.env.get("MYSQL_ROOT_PASSWORD"),
-    }).then((cli: Client) => this.client = cli);
+      password: Deno.env.get("MYSQL_ROOT_PASSWORD")!,
+    });
+    this.db = new Database(this.connector);
+    this.db.link([Plant, Country, Category]);
+    this.db.sync({drop: false});
+    if (!this.initialized) this.initialize();
   }
-  public async getAllPlants(): Promise<Plant[]>
+  public async getAllPlants(): Promise<Object[]>
   {
-    const data = await this.client.query(await Deno.readTextFile("./database/select-all.sql"));
-    return this.MapData(data);
+    const data = await Plant.all();
+    return data;
   }
-  public async GetFromQuery(formQuery: any): Promise<Plant[]>
+  private async initialize(): Promise<void>
   {
-    const query = this.queryToCommand(formQuery);
-    try
+    await Plant.create(await this.parseCSV("../database/rosliny.csv"));
+    await Country.create(await this.parseCSV("../database/kraje.csv"));
+    await Category.create(await this.parseCSV("../database/kategorie.csv"));
+    this.initialized = true;
+  }
+  private async parseCSV(csvPath: string)
+  {
+    const file = await Deno.open(csvPath);
+    const csv = readCSV(file);
+    let obj: any;
+    for await (const row of csv)
     {
-      const data = await this.client.query(await query);
-      return this.MapData(data);
+      if(row == await csv[0]) continue;
+      for await(const [i, val] of row.entries()) {
+        obj[await csv[0][i]] = val;
+      }
     }
-    catch
-    {
-      throw new Error("Invalid query");
-    }
-  }
-  private MapData(data: ExecuteResult): Plant[]
-  {
-    return data.rows!.map((element: any) => 
-      new Plant(element.id, element.nazwa, element.kind, element.nazwaLacinska, element.wydajnoscMiodowa, element.wydajnoscPylkowa, element.kraj)
-    );
-  }
-  private async queryToCommand(query: any): Promise<string>
-  {
-    return (await multiParser(query))?.fields.query!;
+    file.close();
+    return obj;
   }
 }

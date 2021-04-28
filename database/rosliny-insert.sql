@@ -1,6 +1,6 @@
 USE RoslinyMiododajne;
 
-INSERT INTO rodzaje_roslin(Nazwa) VALUES ("Drzewo");
+INSERT INTO kategorie(Nazwa) VALUES ("Drzewo");
 
 INSERT INTO kraje(Kraj) VALUES ("Polska");
 

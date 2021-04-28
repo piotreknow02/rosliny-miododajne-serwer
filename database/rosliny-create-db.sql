@@ -4,7 +4,7 @@ CREATE DATABASE RoslinyMiododajne;
 
 USE RoslinyMiododajne;
 
-CREATE TABLE rodzaje_roslin(
+CREATE TABLE kategorie(
   Id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   Nazwa varchar(30) NOT NULL UNIQUE,
   PRIMARY KEY (Id)
@@ -19,7 +19,7 @@ CREATE TABLE rosliny(
   Wydajnosc_pylkowa int(10) UNSIGNED DEFAULT NULL,
   Zdjecie TEXT(50000) DEFAULT NULL,
   PRIMARY KEY (Id),
-  FOREIGN KEY (Id_rodzaju_rosliny) REFERENCES rodzaje_roslin (Id)
+  FOREIGN KEY (Id_rodzaju_rosliny) REFERENCES kategorie (Id)
 );
 
 CREATE TABLE kraje(
@@ -36,3 +36,8 @@ CREATE TABLE kraje_roslin(
   FOREIGN KEY (Id_rosliny) REFERENCES rosliny (Id),
   FOREIGN KEY (Id_kraju) REFERENCES kraje (Id)
 );
+
+CREATE USER 'User'@localhost IDENTIFIED BY '${MYSQL_USER_PASSWORD}';
+GRANT SELECT ON * TO 'User'@localhost;
+GRANT INSERT ON * TO 'User'@localhost;
+FLUSH PRIVILEGES;
