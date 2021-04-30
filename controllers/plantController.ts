@@ -15,12 +15,6 @@ export default class PlantController {
   public async getAllPlants(): Promise<Plant[]>
   {
     const data = await this.client.query(await Deno.readTextFile("./database/select-all.sql"));
-    return this.MapData(data);
-  }
-  private MapData(data: ExecuteResult): Plant[]
-  {
-    return data.rows!.map((element: any) => 
-      new Plant(element.nazwa, element.kind, element.nazwaLacinska, element.wydajnoscMiodowa, element.wydajnoscPylkowa, element.kraj)
-    );
+    return data;
   }
 }
