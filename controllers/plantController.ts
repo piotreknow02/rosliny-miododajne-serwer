@@ -1,48 +1,26 @@
-import { Database, MySQLConnector, readCSV } from "../deps.ts";
-import { Plant, Country, Category, PlantCountry, PlantCategory } from "../models/Plant.ts";
+import { Client, ExecuteResult } from "../deps.ts";
+import { Plant } from "../models/Plant.ts";
 
 export default class PlantController {
-  private connector: MySQLConnector;
-  private db: Database; 
-  private initialized = false;
+  private client!: Client;
   constructor(host: string)
   {
-    this.connector = new MySQLConnector({
-      host: host,
-      database: "RoslinyMiododajne",
+    new Client().connect({ 
+      hostname: host,
       username: "root",
-      password: Deno.env.get("MYSQL_ROOT_PASSWORD")!,
-    });
-    this.db = new Database(this.connector);
-    this.db.link([Plant, Country, Category]);
-    this.db.sync({drop: false});
-    if (!this.initialized) this.initialize();
+      db: "RoslinyMiododajne",
+      password: Deno.env.get("MYSQL_ROOT_PASSWORD"),
+    }).then((cli: Client) => this.client = cli);
   }
-  public async getAllPlants(): Promise<Object[]>
+  public async getAllPlants(): Promise<Plant[]>
   {
-    const data = await Plant.all();
-    return data;
+    const data = await this.client.query(await Deno.readTextFile("./database/select-all.sql"));
+    return this.MapData(data);
   }
-  private async initialize(): Promise<void>
+  private MapData(data: ExecuteResult): Plant[]
   {
-    await Plant.create(await this.parseCSV("../database/rosliny.csv"));
-    await Country.create(await this.parseCSV("../database/kraje.csv"));
-    await Category.create(await this.parseCSV("../database/kategorie.csv"));
-    this.initialized = true;
-  }
-  private async parseCSV(csvPath: string)
-  {
-    const file = await Deno.open(csvPath);
-    const csv = readCSV(file);
-    let obj: any;
-    for await (const row of csv)
-    {
-      if(row == await csv[0]) continue;
-      for await(const [i, val] of row.entries()) {
-        obj[await csv[0][i]] = val;
-      }
-    }
-    file.close();
-    return obj;
+    return data.rows!.map((element: any) => 
+      new Plant(element.nazwa, element.kind, element.nazwaLacinska, element.wydajnoscMiodowa, element.wydajnoscPylkowa, element.kraj)
+    );
   }
 }
