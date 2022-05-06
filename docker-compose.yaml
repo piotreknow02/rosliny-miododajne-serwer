@@ -44,7 +44,8 @@ services:
     image: nginx
     restart: unless-stopped
     volumes:
-      - ./nginx:/etc/nginx
+      - ./nginx:/etc/nginx/
+      - ./img:/var/www/img/
     ports:
       - 80:80
       - 443:443
@@ -56,6 +57,5 @@ services:
 
 networks:
   rosliny:
-    external: true
 
 # docker-compose up --build
